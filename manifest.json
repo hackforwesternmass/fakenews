@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "FakeNewsFitness Plugin",
-  "description": "This extension will analyze a page for truth value",
+  "name": "FakeNews Tester Plugin",
+  "description": "This extension will test our FakeNews app",
   "version": "1.0",
 
   "browser_action": {
