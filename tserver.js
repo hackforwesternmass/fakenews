@@ -4,7 +4,7 @@ var configdb = require('./mydb').configdb;
 // Log console messages
 var fs = require('fs');
 var fpath = "/usr/lib/node_modules/fakenews/tserver.log";
-fs.appendFile(fpath, "Logging! -1\n"+configdb);
+fs.appendFile(fpath, "Logging! -1\n");
 // pm2 start tserver.js --merge-logs
 
 // Initiate Server
