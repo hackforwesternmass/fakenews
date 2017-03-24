@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         var thisURL = controller.getURL();
         var formFields = [
         //f = fixed rows; v = variable rows
-            ["username","Email Address as User Name","","f"],
+            ["name","Email Address as User Name","","f"],
             ["url","Page URL", thisURL, "f"]
             ];
         //Build the form
@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
 
     else if (msg.text === 'build_form_blank') {
         var formFields = [
-            ["username","Email Address as User Name","","f"],
+            ["name","Email Address as User Name","","f"],
             ["url","Page URL","","f"]
             ];
         //Build the form
@@ -70,12 +70,14 @@ function makeForm(fields) {
 
     // Create Input Elements	
 	for(var i = 0; i < fields.length; i++){
+
 		// Create Label
 		var labelElement = document.createElement("label");
 		labelElement.setAttribute("for", fields[i][0]);
 		var labelText = document.createTextNode(fields[i][1]+": ");
 		labelElement.appendChild(labelText);
 		formName.appendChild(labelElement);
+
 		// Create Input
 		var inputElement = document.createElement("input"); //input element, text
 		inputElement.setAttribute('type',"text");
@@ -85,6 +87,7 @@ function makeForm(fields) {
     }
 	
      // Create Submit Element	
+
 	var submitElement = document.createElement("input"); //input element, Submit button
 	submitElement.setAttribute('type',"button");
 	submitElement.setAttribute('value',"Submit Data");
@@ -92,7 +95,8 @@ function makeForm(fields) {
 	submitElement.addEventListener("click", function() {
 		sendToServer({
 		/* use Jquery with a form serialization library */
-		username: document.getElementById("username").value
+		name: document.getElementById("name").value,
+        url: document.getElementById("url").value
 		})
 		}, false)
 	formName.appendChild(submitElement);
