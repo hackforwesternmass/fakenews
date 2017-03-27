@@ -21,20 +21,21 @@ function sendToServer(obj) {
 });
 
 promiseToken.then(function(result) {
-  console.log(result); // "Stuff worked!"
   var promiseUser = new Promise(function(resolve, reject) {
   var getUser = new XMLHttpRequest();
 	  var uurl = "http://www.fakenewsfitness.org/user?mail="+obj.name;
 	  getUser.onload = function () {
 		  var uStatus = getUser.status;
-		  console.log(uStatus);
 		  var uData = JSON.parse(getUser.response);
-		  console.log(uData.list[0].uid)
-		  if (uStatus == 200) {
-		  resolve(uData.list[0].uid);
-			  }
-		  else {
-          reject(Error(console.log("User promise broke")));
+		  if (uData.list[0] == undefined) {
+			  alert("Email not related to valid FakeNewsFitness user");
+		  } else {
+		    if (uStatus == 200) {
+		    resolve(uData.list[0].uid);
+			    }
+		    else {
+            reject(Error(console.log("User promise broke")));
+		    }
 		  }
 	  }
 	  getUser.open("GET", uurl, true);
@@ -44,7 +45,9 @@ promiseToken.then(function(result) {
 	  getUser.send(null);
   });
   promiseUser.then(function(result) {
-    console.log(result); // "Stuff worked!"
+    if (result == null) {
+		alert("There was a problem retrieving your FakeNewsFitness User");
+	} else {
 	var url = "http://www.fakenewsfitness.org/node"
 	var postData = JSON.stringify({"type":"test_no_group","author":{"id":result},"field_url":{"url":obj.url}});
 	var postRequest = new XMLHttpRequest();
@@ -60,9 +63,10 @@ promiseToken.then(function(result) {
   postRequest.setRequestHeader("X-CSRF-Token", sessionToken);
   postRequest.send(postData);
 	
-  }, function(err) {
+  }}, function(err) {
     console.log(err); // Error: "It broke"
-  });
+    }
+  );
   
 }, function(err) {
   console.log(err); // Error: "It broke"
