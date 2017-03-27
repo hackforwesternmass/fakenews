@@ -1,13 +1,11 @@
+//Promise Pattern for 3 requests to Drupal (get session token, get user id from email input, POST node if previous promises fulfilled)
 function sendToServer(obj) {
   var promiseToken = new Promise(function(resolve, reject) {
-  // do a thing, possibly async, then…
   var getToken = new XMLHttpRequest();
 		  var turl = "http://www.fakenewsfitness.org/restws/session/token";
 		  getToken.onload = function () {
 			  var tStatus = getToken.status;
-			  console.log(tStatus);
 			  var tData = getToken.responseText;
-			  console.log(tData);
 			    if (tStatus == 200) {
 				resolve(tData);
 				}
@@ -27,6 +25,7 @@ promiseToken.then(function(result) {
 	  getUser.onload = function () {
 		  var uStatus = getUser.status;
 		  var uData = JSON.parse(getUser.response);
+		  // Check for an email that isn't a user before confirming promise fulfilled
 		  if (uData.list[0] == undefined) {
 			  alert("Email not related to valid FakeNewsFitness user");
 		  } else {
@@ -34,7 +33,7 @@ promiseToken.then(function(result) {
 		    resolve(uData.list[0].uid);
 			    }
 		    else {
-            reject(Error(console.log("User promise broke")));
+            reject(Error("User promise broke"));
 		    }
 		  }
 	  }
@@ -45,6 +44,7 @@ promiseToken.then(function(result) {
 	  getUser.send(null);
   });
   promiseUser.then(function(result) {
+	// Double check for a "blank" submission in email before attempting to post node
     if (result == null) {
 		alert("There was a problem retrieving your FakeNewsFitness User");
 	} else {
@@ -52,11 +52,8 @@ promiseToken.then(function(result) {
 	var postData = JSON.stringify({"type":"test_no_group","author":{"id":result},"field_url":{"url":obj.url}});
 	var postRequest = new XMLHttpRequest();
 	postRequest.onload = function () {
-	  console.log(postData);
-	  var status = postRequest.status; // HTTP response status, e.g., 200 for "200 OK"
-	  console.log(status);
-      var data = postRequest.responseText; // Returned data, e.g., an HTML document.
-	  console.log(data);
+	  var status = postRequest.status;
+      var data = postRequest.responseText;
   }
   postRequest.open("POST", url, true);
   postRequest.setRequestHeader("Content-Type", "application/json");
@@ -64,12 +61,12 @@ promiseToken.then(function(result) {
   postRequest.send(postData);
 	
   }}, function(err) {
-    console.log(err); // Error: "It broke"
+    console.log(err);
     }
   );
   
 }, function(err) {
-  console.log(err); // Error: "It broke"
+  console.log(err);
 });
 }
 
