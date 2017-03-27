@@ -1,18 +1,72 @@
 function sendToServer(obj) {
-    console.log(obj);
+  var promiseToken = new Promise(function(resolve, reject) {
+  // do a thing, possibly async, then…
+  var getToken = new XMLHttpRequest();
+		  var turl = "http://www.fakenewsfitness.org/restws/session/token";
+		  getToken.onload = function () {
+			  var tStatus = getToken.status;
+			  console.log(tStatus);
+			  var tData = getToken.responseText;
+			  console.log(tData);
+			    if (tStatus == 200) {
+				resolve(tData);
+				}
+				else {
+				reject(Error("It broke"));
+				}
+		  }
+		  getToken.open("GET", turl, true);
+		  getToken.setRequestHeader("Accept", "application/json");
+		  getToken.send(null);
+});
 
-    fetch('http://test.fakenewsfitness.org', {
-        method: 'POST',
-        body: JSON.stringify(obj)
-    })
-    .then(function(res) {
-        if (!res.ok) {
-            console.log("request failed: " + res.status + " " + res.statusText);
-        }
-    })
-    .catch(function(err) {
-        console.log(err);
-    })
+promiseToken.then(function(result) {
+  console.log(result); // "Stuff worked!"
+  var promiseUser = new Promise(function(resolve, reject) {
+  var getUser = new XMLHttpRequest();
+	  var uurl = "http://www.fakenewsfitness.org/user?mail="+obj.name;
+	  getUser.onload = function () {
+		  var uStatus = getUser.status;
+		  console.log(uStatus);
+		  var uData = JSON.parse(getUser.response);
+		  console.log(uData.list[0].uid)
+		  if (uStatus == 200) {
+		  resolve(uData.list[0].uid);
+			  }
+		  else {
+          reject(Error(console.log("User promise broke")));
+		  }
+	  }
+	  getUser.open("GET", uurl, true);
+	  getUser.setRequestHeader("Accept", "application/json");
+	  sessionToken = result;
+	  getUser.setRequestHeader("X-CSRF-Token", sessionToken);
+	  getUser.send(null);
+  });
+  promiseUser.then(function(result) {
+    console.log(result); // "Stuff worked!"
+	var url = "http://www.fakenewsfitness.org/node"
+	var postData = JSON.stringify({"type":"test_no_group","author":{"id":result},"field_url":{"url":obj.url}});
+	var postRequest = new XMLHttpRequest();
+	postRequest.onload = function () {
+	  console.log(postData);
+	  var status = postRequest.status; // HTTP response status, e.g., 200 for "200 OK"
+	  console.log(status);
+      var data = postRequest.responseText; // Returned data, e.g., an HTML document.
+	  console.log(data);
+  }
+  postRequest.open("POST", url, true);
+  postRequest.setRequestHeader("Content-Type", "application/json");
+  postRequest.setRequestHeader("X-CSRF-Token", sessionToken);
+  postRequest.send(postData);
+	
+  }, function(err) {
+    console.log(err); // Error: "It broke"
+  });
+  
+}, function(err) {
+  console.log(err); // Error: "It broke"
+});
 }
 
 // Listen for messages
