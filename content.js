@@ -10,7 +10,7 @@ function sendToServer(obj) {
 				resolve(tData);
 				}
 				else {
-				reject(Error("It broke"));
+				reject(Error("This email is not logged into fakenewsfitness.org"));
 				}
 		  }
 		  getToken.open("GET", turl, true);
@@ -33,7 +33,7 @@ promiseToken.then(function(result) {
 		    resolve(uData.list[0].uid);
 			    }
 		    else {
-            reject(Error("User promise broke"));
+            reject(Error("Something went wrong retrieving user information"));
 		    }
 		  }
 	  }
@@ -61,12 +61,12 @@ promiseToken.then(function(result) {
   postRequest.send(postData);
 	
   }}, function(err) {
-    console.log(err);
+    alert(err);
     }
   );
   
 }, function(err) {
-  console.log(err);
+  alert(err);
 });
 }
 
